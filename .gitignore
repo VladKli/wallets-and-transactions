@@ -1,0 +1,12 @@
+*.pyc
+*.db
+*~
+.*
+interrogate_badge.svg
+
+
+/env/
+
+!.github
+!.gitignore
+!.pre-commit-config.yaml
