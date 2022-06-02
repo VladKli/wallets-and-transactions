@@ -9,6 +9,8 @@ class WalletCreateSerializer(serializers.ModelSerializer):
     Serializer for create wallet
     """
 
+    CURRENCY = "RUB"
+
     name = serializers.CharField(
         max_length=8, default=Wallet.wallet_name_generator
     )
@@ -31,8 +33,8 @@ class WalletCreateSerializer(serializers.ModelSerializer):
         )
 
     def create(self, validated_data):
-        """bonus from bank: if wallet currency USD or EUR - balance=3.00, if RUB - balance=100.00)"""
-        if validated_data["currency"] == "RUB":
+        """Bonus from bank: if wallet currency USD or EUR - balance=3.00, if RUB - balance=100.00)"""
+        if validated_data["currency"] == self.CURRENCY:
             validated_data["balance"] = 100
         else:
             validated_data["balance"] = 3
@@ -43,7 +45,7 @@ class WalletCreateSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """User serizlizer"""
+    """User serializer"""
 
     owner = serializers.PrimaryKeyRelatedField(
         many=True, queryset=Wallet.objects.all()

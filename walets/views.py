@@ -13,13 +13,15 @@ class WalletView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request) -> Response:
         """Get wallet list"""
         wallets = Wallet.objects.filter(user=self.request.user)
-        serializer = WalletCreateSerializer(wallets, many=True)
-        return Response(serializer.data)
+        if wallets:
+            serializer = WalletCreateSerializer(wallets, many=True)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def post(self, request):
+    def post(self, request) -> Response:
         """Create wallet"""
         serializer = WalletCreateSerializer(
             data=request.data, context={"request": request}
@@ -40,7 +42,7 @@ class WalletsDetail(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs) -> Response:
         """Get specific wallet of current logged user"""
         wallet = Wallet.objects.filter(user=self.request.user).filter(
             name=self.kwargs.get("name")
@@ -50,7 +52,7 @@ class WalletsDetail(APIView):
             return Response(serializer.data)
         return Response("No such wallet", status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, *args, **kwargs) -> Response:
         """Delete specific wallet of current logged user"""
         wallet = Wallet.objects.filter(user=self.request.user).filter(
             name=self.kwargs.get("name")
