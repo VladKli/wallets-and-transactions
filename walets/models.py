@@ -41,3 +41,6 @@ class Wallet(models.Model):
     )
     created_on = models.DateTimeField(auto_now_add=True, null=True)
     modified_on = models.DateTimeField(auto_now=True, null=True)
+
+    def __repr__(self):
+        return self.name

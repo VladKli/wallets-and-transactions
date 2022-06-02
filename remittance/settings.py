@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "knox",
     "authorization",
     "walets",
+    "transactions",
 ]
 
 MIDDLEWARE = [
