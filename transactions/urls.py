@@ -4,8 +4,8 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from transactions import views
 
 urlpatterns = [
-    path("create/", views.TransactionsList.as_view()),
-    path("<int:pk>", views.TransactionsDetail.as_view()),
+    path("", views.TransactionsList.as_view()),
+    path("<int:pk>/", views.TransactionsDetail.as_view()),
     path("<str:pk>/", views.TransactionsWalletDetail.as_view()),
 ]
 
