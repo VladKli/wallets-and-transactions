@@ -34,7 +34,7 @@ class Wallet(models.Model):
         default="EUR",
     )
     balance = models.DecimalField(
-        max_digits=10, decimal_places=2, default=0.00, editable=False
+        max_digits=100, decimal_places=2, default=0.00, editable=False
     )
     user = models.ForeignKey(
         "auth.User", related_name="owner", on_delete=models.CASCADE
@@ -43,4 +43,5 @@ class Wallet(models.Model):
     modified_on = models.DateTimeField(auto_now=True, null=True)
 
     def __repr__(self):
+        """Return name repr"""
         return self.name
