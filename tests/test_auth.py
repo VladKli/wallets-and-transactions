@@ -45,16 +45,45 @@ def test_login_answer_code(client):
     assert response_login.status_code == 200
 
 
-# @pytest.mark.django_db
-# def test_registration_without_credential(client):
-#     """Test a response in case all credentials for login are not provided."""
-#     response = client.post(
-#         "/api/register/",
-#         data={
-#             "username": "test_user",
-#             "email": "",
-#             "password": "test_user",
-#         },
-#     )
-#     response_body = response.json()
-#     assert response.status_code == 200
+@pytest.mark.django_db
+def test_registration_without_credential(client):
+    """Test a response in case credentials for login are not provided."""
+    response = client.post(
+        "/api/register/",
+        data={
+            "username": "",
+            "email": "",
+            "password": "",
+        },
+    )
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_registration_with_incorrect_email(client):
+    """Test a response code in case email is not valid."""
+    response = client.post(
+        "/api/register/",
+        data={
+            "username": "test",
+            "email": "test",
+            "password": "test",
+        },
+    )
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_registration_with_small_password(client):
+    """Test a response code in case password is less than 8 signs."""
+    response = client.post(
+        "/api/register/",
+        data={
+            "username": "test123",
+            "email": "test@test.com",
+            "password": "test123",
+        },
+    )
+    response_body = response.json()
+    assert response_body == "Password should be at least 8 characters."
+    assert response.status_code == 400
