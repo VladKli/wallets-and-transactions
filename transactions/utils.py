@@ -1,51 +1,30 @@
 from django.db.models import F
-from rest_framework import status
-from rest_framework.response import Response
 
 from walets.models import Wallet
 
+BANK_COMMISSION = 0.1
+TRANSFER_AMOUNT_WITH_COMMISSION = 0.9
 
-def transaction_validation(
-    serializer, sender_wallet, receiver_wallet, request
-) -> Response:
-    if (
-        sender_wallet.exists()
-        and sender_wallet.filter(balance__gte=request.data["transfer_amount"])
-        and sender_wallet.values("currency").intersection(
-            receiver_wallet.values("currency")
-        )
-    ):
-        if Wallet.objects.filter(user=request.user).filter(
-            name=request.data["receiver"]
-        ):
-            sender_wallet.update(
-                balance=F("balance") - request.data["transfer_amount"]
-            )
-            receiver_wallet.update(
-                balance=F("balance") + request.data["transfer_amount"]
-            )
-            if serializer.is_valid():
-                serializer.save()
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED
-                )
-        else:
-            sender_wallet.update(
-                balance=F("balance") - request.data["transfer_amount"]
-            )
-            receiver_wallet.update(
-                balance=F("balance")
-                + float(request.data["transfer_amount"]) * 0.9
-            )
-            if serializer.is_valid():
-                serializer.validated_data["commission"] = (
-                    float(request.data["transfer_amount"]) * 0.1
-                )
-                serializer.save()
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED
-                )
-    return Response(
-        "Impossible process transaction. Check wallets numbers, currency, balance amount.",
-        status=status.HTTP_400_BAD_REQUEST,
+
+def balance_transfer(
+    sender_wallet,
+    receiver_wallet,
+    sender_user,
+    receiver_wallet_name,
+    transfer_amount,
+):
+    """Balance transfers from sender wallet to receiver"""
+
+    funds_amount = (
+        transfer_amount
+        if Wallet.objects.filter(user=sender_user, name=receiver_wallet_name)
+        else (float(transfer_amount) * TRANSFER_AMOUNT_WITH_COMMISSION)
     )
+    commission = (
+        0
+        if Wallet.objects.filter(user=sender_user, name=receiver_wallet_name)
+        else BANK_COMMISSION
+    )
+    sender_wallet.update(balance=F("balance") - transfer_amount)
+    receiver_wallet.update(balance=F("balance") + funds_amount)
+    return commission
