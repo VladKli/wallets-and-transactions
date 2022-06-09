@@ -7,6 +7,26 @@ from django.db import models
 class Wallet(models.Model):
     """Wallet model"""
 
+    MAX_WALLETS = 5
+    BANK_BONUS_USD_EUR = 3.00
+    BANK_BONUS_RUB = 100.00
+
+    PAYMENT_METHOD_VISA = "visa"
+    PAYMENT_METHOD_MASTERCARD = "mastercard"
+    TYPE_CHOICES = (
+        (PAYMENT_METHOD_VISA, "Visa"),
+        (PAYMENT_METHOD_MASTERCARD, "Mastercard"),
+    )
+
+    CURRENCY_METHOD_RUB = "RUB"
+    CURRENCY_METHOD_USD = "USD"
+    CURRENCY_METHOD_EUR = "EUR"
+    CURRENCY_CHOICES = (
+        (CURRENCY_METHOD_RUB, "RUB"),
+        (CURRENCY_METHOD_USD, "USD"),
+        (CURRENCY_METHOD_EUR, "EUR"),
+    )
+
     def wallet_name_generator(
         size=8, chars=string.ascii_uppercase + string.digits
     ):
@@ -24,14 +44,10 @@ class Wallet(models.Model):
         unique=True,
     )
     type = models.CharField(
-        choices=[("visa", "Visa"), ("mastercard", "Mastercard")],
-        max_length=10,
-        default="Visa",
+        choices=TYPE_CHOICES, max_length=10, default="visa"
     )
     currency = models.CharField(
-        choices=[("EUR", "EUR"), ("USD", "USD"), ("RUB", "RUB")],
-        max_length=3,
-        default="EUR",
+        choices=CURRENCY_CHOICES, max_length=3, default="rub"
     )
     balance = models.DecimalField(
         max_digits=100, decimal_places=2, default=0.00, editable=False

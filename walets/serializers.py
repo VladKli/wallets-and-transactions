@@ -1,15 +1,14 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from walets.models import Wallet
 
 
-class WalletCreateSerializer(serializers.ModelSerializer):
+class WalletSerializer(serializers.ModelSerializer):
     """
     Serializer for create wallet
     """
-
-    CURRENCY = "RUB"
 
     name = serializers.CharField(
         max_length=8, default=Wallet.wallet_name_generator
@@ -34,10 +33,10 @@ class WalletCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Bonus from bank: if wallet currency USD or EUR - balance=3.00, if RUB - balance=100.00)"""
-        if validated_data["currency"] == self.CURRENCY:
-            validated_data["balance"] = 100
+        if validated_data["currency"] == Wallet.CURRENCY_METHOD_RUB:
+            validated_data["balance"] = Wallet.BANK_BONUS_RUB
         else:
-            validated_data["balance"] = 3
+            validated_data["balance"] = Wallet.BANK_BONUS_USD_EUR
         user = self.context["request"].user
         wallet = Wallet.objects.create(**validated_data, user=user)
         wallet.save()

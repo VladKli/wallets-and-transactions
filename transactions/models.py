@@ -6,6 +6,13 @@ from walets.models import Wallet
 class Transaction(models.Model):
     """Transaction model"""
 
+    STATUS_PAID = "paid"
+    STATUS_FAILED = "failed"
+    TYPE_CHOICES = (
+        (STATUS_PAID, "Paid"),
+        (STATUS_FAILED, "Failed"),
+    )
+
     sender = models.ForeignKey(
         Wallet,
         on_delete=models.CASCADE,
@@ -25,7 +32,7 @@ class Transaction(models.Model):
         max_digits=100, decimal_places=2, default=0.00, editable=False
     )
     status = models.CharField(
-        choices=[("paid", "PAID"), ("failed", "FAILED")],
+        choices=TYPE_CHOICES,
         max_length=6,
         default="paid",
         editable=False,

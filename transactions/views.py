@@ -6,11 +6,11 @@ from rest_framework.views import APIView
 
 from transactions.models import Transaction
 from transactions.serializers import TransactionSerializer
-from transactions.utils import transaction_validation
+from transactions.utils import balance_transfer
 from walets.models import Wallet
 
 
-class TransactionsList(APIView):
+class TransactionsListCreate(APIView):
     """Get transactions list, create transaction"""
 
     permission_classes = [permissions.IsAuthenticated]
@@ -37,10 +37,27 @@ class TransactionsList(APIView):
         receiver_wallet = Wallet.objects.filter(
             name=self.request.data["receiver"]
         )
+        sender_user = request.user
+        transfer_amount = request.data["transfer_amount"]
+        receiver_wallet_name = request.data["receiver"]
 
-        return transaction_validation(
-            serializer, sender_wallet, receiver_wallet, request
-        )
+        if sender_wallet.exists():
+            commission = balance_transfer(
+                sender_wallet,
+                receiver_wallet,
+                sender_user,
+                receiver_wallet_name,
+                transfer_amount,
+            )
+            if serializer.is_valid():
+                serializer.validated_data["commission"] = (
+                    float(transfer_amount) * commission
+                )
+                serializer.save()
+                return Response(
+                    serializer.data, status=status.HTTP_201_CREATED
+                )
+        return Response("No such wallet", status=status.HTTP_400_BAD_REQUEST)
 
 
 class TransactionsDetail(APIView):
@@ -62,7 +79,7 @@ class TransactionsDetail(APIView):
 
 
 class TransactionsWalletDetail(APIView):
-    """Get specific transaction of current logged user"""
+    """Get all user's transaction from specific wallet"""
 
     permission_classes = [permissions.IsAuthenticated]
 
@@ -78,6 +95,4 @@ class TransactionsWalletDetail(APIView):
         serializer = TransactionSerializer(queryset, many=True)
         if queryset:
             return Response(serializer.data)
-        return Response(
-            "No such transaction", status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response("No transactions", status=status.HTTP_400_BAD_REQUEST)
