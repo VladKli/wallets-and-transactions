@@ -21,12 +21,13 @@ def test_registration_body_and_code(client):
 @pytest.mark.django_db
 def test_registration_user_exists(client):
     """Test capability to create user with the same data. Username Testing exists in DB"""
+    test_registration_body_and_code(client)
     response = client.post(
         "/api/register/",
         data={
-            "username": "Testing",
-            "email": "test1@at.com",
-            "password": "12345678",
+            "username": "test_user",
+            "email": "test_user@at.com",
+            "password": "test_user",
         },
     )
 
@@ -40,11 +41,12 @@ def test_registration_user_exists(client):
 @pytest.mark.django_db
 def test_login_answer_code(client):
     """Test login response code. Username qwerty exists in DB"""
+    test_registration_body_and_code(client)
     response_login = client.post(
         "/api/login/",
         data={
-            "username": "qwerty",
-            "password": "qwerty",
+            "username": "test_user",
+            "password": "test_user",
         },
     )
 

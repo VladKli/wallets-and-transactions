@@ -7,9 +7,9 @@ from walets.models import Wallet
 @pytest.mark.django_db
 def test_transaction_create(create_wallets):
     """Test normal behaviour during transaction creating"""
-    wallet_sender = Wallet.objects.first().name
+    wallet_sender = create_wallets[1]
     wallet_receiver = Wallet.objects.last().name
-    response = create_wallets.post(
+    response = create_wallets[0].post(
         "/wallets/transactions/",
         data={
             "sender": wallet_sender,
@@ -28,9 +28,9 @@ def test_transaction_create(create_wallets):
 @pytest.mark.django_db
 def test_transaction_create_balance_low(create_wallets):
     """Test transaction creation when balance is low"""
-    wallet_sender = Wallet.objects.first().name
+    wallet_sender = create_wallets[1]
     wallet_receiver = Wallet.objects.last().name
-    response = create_wallets.post(
+    response = create_wallets[0].post(
         "/wallets/transactions/",
         data={
             "sender": wallet_sender,
@@ -47,7 +47,7 @@ def test_transaction_create_balance_low(create_wallets):
 def test_transaction_create_wrong_wallet(create_wallets):
     """Test transaction creation when wallet number is wrong"""
     wallet_receiver = Wallet.objects.last().name
-    response = create_wallets.post(
+    response = create_wallets[0].post(
         "/wallets/transactions/",
         data={
             "sender": "12345678",
@@ -63,11 +63,11 @@ def test_transaction_create_wrong_wallet(create_wallets):
 @pytest.mark.django_db
 def test_transaction_create_wrong_currency(create_wallets):
     """Test transaction creation when currency is wrong"""
-    wallet_sender = Wallet.objects.first().name
+    wallet_sender = create_wallets[1]
     wallet_receiver = Wallet.objects.last()
     wallet_receiver.currency = "USD"
     wallet_receiver.save()
-    response = create_wallets.post(
+    response = create_wallets[0].post(
         "/wallets/transactions/",
         data={
             "sender": wallet_sender,
@@ -84,14 +84,14 @@ def test_transaction_create_wrong_currency(create_wallets):
 def test_transaction_list(create_wallets):
     """Test normal behaviour to get list of transactions"""
     test_transaction_create(create_wallets)
-    response = create_wallets.get("/wallets/transactions/")
+    response = create_wallets[0].get("/wallets/transactions/")
     assert response.status_code == 200
 
 
 @pytest.mark.django_db
 def test_transaction_empty_list(create_wallets):
     """Test to get list of transactions when it is empty"""
-    response = create_wallets.get("/wallets/transactions/")
+    response = create_wallets[0].get("/wallets/transactions/")
     assert response.status_code == 404
 
 
@@ -100,8 +100,8 @@ def test_get_all_transaction_of_certain_wallet(create_wallets):
     """Test to get list of transactions of certain wallet"""
     test_transaction_create(create_wallets)
     test_transaction_create(create_wallets)
-    wallet_sender = Wallet.objects.first().name
-    response = create_wallets.get(
+    wallet_sender = create_wallets[1]
+    response = create_wallets[0].get(
         f"/wallets/transactions/{wallet_sender}", follow=True
     )
     assert response.status_code == 200
@@ -110,7 +110,7 @@ def test_get_all_transaction_of_certain_wallet(create_wallets):
 @pytest.mark.django_db
 def test_get_all_transaction_of_non_existent_wallet(create_wallets):
     """Test to get list of transactions of non-existent wallet"""
-    response = create_wallets.get(
+    response = create_wallets[0].get(
         "/wallets/transactions/12345678", follow=True
     )
     response_body = response.json()
@@ -122,8 +122,8 @@ def test_get_all_transaction_of_non_existent_wallet(create_wallets):
 def test_get_transaction_by_pk(create_wallets):
     """Test to get transaction by id"""
     test_transaction_create(create_wallets)
-    transaction_id = Transaction.objects.first().id
-    response = create_wallets.get(
+    transaction_id = Transaction.objects.last().id
+    response = create_wallets[0].get(
         f"/wallets/transactions/{transaction_id}", follow=True
     )
     assert response.status_code == 200
@@ -132,7 +132,7 @@ def test_get_transaction_by_pk(create_wallets):
 @pytest.mark.django_db
 def test_get_transaction_by_non_existent_pk(create_wallets):
     """Test to get non-existent transaction by id"""
-    response = create_wallets.get("/wallets/transactions/444", follow=True)
+    response = create_wallets[0].get("/wallets/transactions/444", follow=True)
     response_body = response.json()
     assert response_body == "No such transaction"
     assert response.status_code == 400

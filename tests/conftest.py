@@ -1,13 +1,8 @@
 import pytest
-from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 
 from tests.test_wallets import test_wallet_creation
-
-
-@pytest.fixture(scope="session")
-def django_db_setup():
-    """Connect test DB"""
+from walets.models import Wallet
 
 
 @pytest.fixture(scope="function")
@@ -42,11 +37,12 @@ def login_user1(client):
 
 @pytest.fixture(scope="function")
 def create_wallets(login_user, login_user1):
-    """Create walets for testing"""
+    """Create wallets for testing"""
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION="Token " + login_user)
     test_wallet_creation(login_user)
+    prelast_wallet = Wallet.objects.last().name
     client1 = APIClient()
     client1.credentials(HTTP_AUTHORIZATION="Token " + login_user1)
     test_wallet_creation(login_user1)
-    return client
+    return client, prelast_wallet
