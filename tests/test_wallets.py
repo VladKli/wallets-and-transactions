@@ -1,8 +1,6 @@
 import pytest
 from rest_framework.test import APIClient
 
-from walets.models import Wallet
-
 
 @pytest.mark.django_db
 def test_wallet_creation_without_auth_token(client):
@@ -52,7 +50,7 @@ def test_user_wallets_empty_list(login_user):
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION="Token " + login_user)
     response = client.get("/wallets/")
-    assert response.status_code == 204
+    assert response.status_code == 404
 
 
 @pytest.mark.django_db
@@ -70,11 +68,10 @@ def test_user_wallets_list(login_user):
 def test_another_user_wallets_list(login_user, login_user1):
     """Test a correct response when user is authorized and try to see wallets which did not create."""
     test_wallet_creation(login_user)
-    test_wallet_creation(login_user)
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION="Token " + login_user1)
     response = client.get("/wallets/")
-    assert response.status_code == 204
+    assert response.status_code == 404
 
 
 @pytest.mark.django_db

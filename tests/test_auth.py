@@ -20,15 +20,20 @@ def test_registration_body_and_code(client):
 
 @pytest.mark.django_db
 def test_registration_user_exists(client):
-    """Test capability to create user with the same data. Username qwerty exists in DB"""
+    """Test capability to create user with the same data. Username Testing exists in DB"""
     response = client.post(
         "/api/register/",
         data={
-            "username": "qwerty",
-            "email": "qwerty@at.com",
-            "password": "qwerty",
+            "username": "Testing",
+            "email": "test1@at.com",
+            "password": "12345678",
         },
     )
+
+    response_body = response.json()
+    assert response_body["username"] == [
+        "A user with that username already exists."
+    ]
     assert response.status_code == 400
 
 
@@ -42,6 +47,7 @@ def test_login_answer_code(client):
             "password": "qwerty",
         },
     )
+
     assert response_login.status_code == 200
 
 
@@ -67,9 +73,12 @@ def test_registration_with_incorrect_email(client):
         data={
             "username": "test",
             "email": "test",
-            "password": "test",
+            "password": "testtest",
         },
     )
+
+    response_body = response.json()
+    assert response_body["email"] == ["Enter a valid email address."]
     assert response.status_code == 400
 
 
