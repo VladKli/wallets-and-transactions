@@ -74,7 +74,7 @@ class TransactionsDetail(APIView):
             serializer = TransactionSerializer(queryset, many=True)
             return Response(serializer.data)
         return Response(
-            "No such transaction", status=status.HTTP_400_BAD_REQUEST
+            "No such transaction", status=status.HTTP_404_NOT_FOUND
         )
 
 
@@ -95,4 +95,4 @@ class TransactionsWalletDetail(APIView):
         serializer = TransactionSerializer(queryset, many=True)
         if queryset:
             return Response(serializer.data)
-        return Response("No transactions", status=status.HTTP_400_BAD_REQUEST)
+        return Response("No transactions", status=status.HTTP_404_NOT_FOUND)

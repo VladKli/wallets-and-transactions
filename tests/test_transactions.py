@@ -115,7 +115,7 @@ def test_get_all_transaction_of_non_existent_wallet(create_wallets):
     )
     response_body = response.json()
     assert response_body == "No such transaction"
-    assert response.status_code == 400
+    assert response.status_code == 404
 
 
 @pytest.mark.django_db
@@ -135,4 +135,4 @@ def test_get_transaction_by_non_existent_pk(create_wallets):
     response = create_wallets[0].get("/wallets/transactions/444", follow=True)
     response_body = response.json()
     assert response_body == "No such transaction"
-    assert response.status_code == 400
+    assert response.status_code == 404
