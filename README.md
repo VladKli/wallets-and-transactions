@@ -4,17 +4,25 @@
 Implemented ability to create new wallets and provide transactions between them. Transactions are available only for wallets with the same currency. From RUB to RUB - good, from RUB to USD - wrong, show exception for user. When user sends money from his wallet to his another wallet - no commission, and when he sends to wallet, related to another user - commission=10%
 
 <h3>How to Install and Run the Project</h3>
+
 * create and activate virtualenv
+
 * git clone https://github.com/VladKli/wallets-and-transactions.git
+
 * cd wallets-and-transactions
+
 * pip install -r requirements.txt
+
 * create postgres db and connect it in remittance/settings.py
+
 * python manage.py migrate
+
 * python manage.py runserver
 
 <h3>Available endpoints</h3>
 <h4>All endpoints except `/api/register/ `requires HEADERS {Authorization: Token}</h4>
 ___
+
 GET /api/register/ - register
 
 `{
