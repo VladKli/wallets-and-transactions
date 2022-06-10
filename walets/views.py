@@ -47,10 +47,10 @@ class WalletsDetail(APIView):
         wallet = Wallet.objects.filter(
             user=self.request.user, name=self.kwargs.get("name")
         )
-        if wallet:
-            serializer = WalletSerializer(wallet, many=True)
-            return Response(serializer.data)
-        return Response("No such wallet", status=status.HTTP_404_NOT_FOUND)
+
+        get_object_or_404(wallet, name=self.kwargs.get("name"))
+        serializer = WalletSerializer(wallet, many=True)
+        return Response(serializer.data)
 
     def delete(self, request, *args, **kwargs) -> Response:
         """Delete specific wallet of current logged user"""
