@@ -21,6 +21,7 @@ Implemented ability to create new wallets and provide transactions between them.
 
 <h3>Available endpoints</h3>
 <h4>All endpoints except `/api/register/ `requires HEADERS {Authorization: Token}</h4>
+
 ___
 
 GET /api/register/ - register
