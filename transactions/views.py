@@ -23,7 +23,7 @@ class TransactionsListCreate(APIView):
         if queryset:
             serializer = TransactionSerializer(queryset, many=True)
             return Response(serializer.data)
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     @transaction.atomic
     def post(self, request) -> Response:

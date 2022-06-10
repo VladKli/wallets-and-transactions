@@ -1,19 +1,13 @@
 import pytest
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 
-from remittance import settings
+from tests.test_wallets import test_wallet_creation
 
 
 @pytest.fixture(scope="session")
 def django_db_setup():
     """Connect test DB"""
-    settings.DATABASES["default"] = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "drf_test",
-        "USER": "dev",
-        "PASSWORD": "3a9...To 91",
-        "HOST": "localhost",
-        "PORT": "5432",
-    }
 
 
 @pytest.fixture(scope="function")
@@ -44,3 +38,15 @@ def login_user1(client):
     )
     token = response.json()["token"]
     return token
+
+
+@pytest.fixture(scope="function")
+def create_wallets(login_user, login_user1):
+    """Create walets for testing"""
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION="Token " + login_user)
+    test_wallet_creation(login_user)
+    client1 = APIClient()
+    client1.credentials(HTTP_AUTHORIZATION="Token " + login_user1)
+    test_wallet_creation(login_user1)
+    return client
