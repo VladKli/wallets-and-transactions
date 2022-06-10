@@ -1,23 +1,40 @@
 <h1>Remittance</h1>
 
 <h3>Project Description</h3>
-Implemented ability to create new wallets and provide transactions between them. Transactions are available only for wallets with the same currency. From RUB to RUB - good, from RUB to USD - wrong, show exception for user. When user sends money from his wallet to his another wallet - no commission, and when he sends to wallet, related to another user - commission=10%
+Implemented ability to create new wallets and provide transactions between them. Transactions are available only for wallets with the same currency. From RUB to RUB - good, from RUB to USD - wrong. When user sends money from his wallet to his another wallet - no commission, and when he sends to wallet, related to another user - commission=10%.
+Transactions and wallets creation are available only for logged users.
 
 <h3>How to Install and Run the Project</h3>
 
 * create and activate virtualenv
 
-* git clone https://github.com/VladKli/wallets-and-transactions.git
+* `git clone https://github.com/VladKli/wallets-and-transactions.git`
 
-* cd wallets-and-transactions
+* `cd wallets-and-transactions`
 
-* pip install -r requirements.txt
+* `pip install -r requirements.txt`
 
-* create postgres db and connect it in remittance/settings.py
+* create postgres db and connect it in `settings.py`
 
-* python manage.py migrate
+Use `.env` file which contains environment variables for connection to db. 
+Such as:
 
-* python manage.py runserver
+SECRET_KEY=<**secret key**> - can be random code
+
+DATABASE_NAME=<**db name**>
+
+DATABASE_USER=<**db username**>
+
+DATABASE_PASS=<**db password**>
+
+DATABASE_HOST=<**localhost**>
+
+DATABASE_PORT=<**port**>
+
+
+* `python manage.py migrate`
+
+* `python manage.py runserver`
 
 <h3>Available endpoints</h3>
 <h4>All endpoints except `/api/register/ `requires HEADERS {Authorization: Token}</h4>
