@@ -35,11 +35,11 @@ def test_transaction_create_balance_low(create_wallets):
         data={
             "sender": wallet_sender,
             "receiver": wallet_receiver,
-            "transfer_amount": "100",
+            "transfer_amount": "1000",
         },
     )
     response_body = response.json()
-    assert response_body == ["Not enough balance"]
+    assert response_body["transfer_amount"] == ["Not enough balance"]
     assert response.status_code == 400
 
 
@@ -56,7 +56,9 @@ def test_transaction_create_wrong_wallet(create_wallets):
         },
     )
     response_body = response.json()
-    assert response_body == "No such wallet"
+    assert response_body["sender"] == [
+        "Object with name=12345678 does not exist."
+    ]
     assert response.status_code == 400
 
 

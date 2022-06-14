@@ -6,8 +6,6 @@ from rest_framework.views import APIView
 
 from transactions.models import Transaction
 from transactions.serializers import TransactionSerializer
-from transactions.utils import balance_transfer
-from walets.models import Wallet
 
 
 class TransactionsListCreate(APIView):
@@ -31,33 +29,9 @@ class TransactionsListCreate(APIView):
         serializer = TransactionSerializer(
             data=request.data, context={"request": request}
         )
-        sender_wallet = Wallet.objects.filter(user=self.request.user).filter(
-            name=self.request.data["sender"]
-        )
-        receiver_wallet = Wallet.objects.filter(
-            name=self.request.data["receiver"]
-        )
-        sender_user = request.user
-        transfer_amount = request.data["transfer_amount"]
-        receiver_wallet_name = request.data["receiver"]
-
-        if sender_wallet.exists():
-            commission = balance_transfer(
-                sender_wallet,
-                receiver_wallet,
-                sender_user,
-                receiver_wallet_name,
-                transfer_amount,
-            )
-            if serializer.is_valid():
-                serializer.validated_data["commission"] = (
-                    float(transfer_amount) * commission
-                )
-                serializer.save()
-                return Response(
-                    serializer.data, status=status.HTTP_201_CREATED
-                )
-        return Response("No such wallet", status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class TransactionsDetail(APIView):
